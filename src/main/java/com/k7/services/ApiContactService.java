@@ -32,7 +32,7 @@ public class ApiContactService implements ContactService {
         req.setValue(c.getValue());
         req.setType(c.getType().toString().toLowerCase());
         try {
-            HttpRequest request = requestBuild(req, "contacts/add");
+            HttpRequest request = requestBuild(req, "/contacts/add");
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             //System.out.println("add_resp" + response.body());
             StatusResponse statusResponse = objectMapper.readValue(response.body(), StatusResponse.class);
@@ -55,7 +55,7 @@ public class ApiContactService implements ContactService {
         ContactsResponse.ContactRequest req = new ContactsResponse.ContactRequest();
         req.setName(name);
         try {
-            HttpRequest request = requestBuild(req, "contacts/find");
+            HttpRequest request = requestBuild(req, "/contacts/find");
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             //System.out.println("contBname:" + response.body());
             ContactsResponse contactsResponse = objectMapper.readValue(response.body(), ContactsResponse.class);
@@ -74,7 +74,7 @@ public class ApiContactService implements ContactService {
         ContactsResponse.ContactRequest req = new ContactsResponse.ContactRequest();
         req.setValue(value);
         try {
-            HttpRequest request = requestBuild(req, "contacts/find");
+            HttpRequest request = requestBuild(req, "/contacts/find");
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             ContactsResponse contactsResponse = objectMapper.readValue(response.body(), ContactsResponse.class);
             if (contactsResponse.getStatus().equals("error")) {
@@ -92,7 +92,7 @@ public class ApiContactService implements ContactService {
     public List<Contact> getAll() {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(baseUri + "contacts"))
+                    .uri(URI.create(baseUri + "/contacts"))
                     .GET()
                     .header("Accept", "Application/json")
                     .header("Content-Type", "Application/json")

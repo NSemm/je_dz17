@@ -38,7 +38,7 @@ public class ApiUserService implements UserService {
         req.setPassword(user.getPassword());
         req.setDateBorn(user.getDateBorn().toString());
         try {
-            HttpRequest request = requestBuild(req, "register");
+            HttpRequest request = requestBuild(req, "/register");
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             //System.out.println("reg "+response.body());
             StatusResponse statusResponse = objectMapper.readValue(response.body(), StatusResponse.class);
@@ -57,7 +57,7 @@ public class ApiUserService implements UserService {
         req.setLogin(user.getLogin());
         req.setPassword(user.getPassword());
         try {
-            HttpRequest request = requestBuild(req, "login");
+            HttpRequest request = requestBuild(req, "/login");
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             //System.out.println(response.body());
@@ -80,7 +80,7 @@ public class ApiUserService implements UserService {
     @Override
     public List<User> getAll() {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(baseUri + "users"))
+                .uri(URI.create(baseUri + "/users"))
                 .GET()
                 .header("Accept", "Application/json")
                 .build();
