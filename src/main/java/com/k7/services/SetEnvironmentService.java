@@ -1,9 +1,11 @@
-package com.k7.utility;
+package com.k7.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.k7.Menu;
+import com.k7.configuration.AppProperties;
 import com.k7.menuaction.*;
 import com.k7.services.*;
+import com.k7.utility.OutputContacts;
 import lombok.AllArgsConstructor;
 
 import java.net.http.HttpClient;
@@ -11,16 +13,16 @@ import java.util.*;
 
 @AllArgsConstructor
 public class SetEnvironmentService {
-    private Properties properties;
+    private AppProperties properties;
 
     public void start() {
         Scanner sc = new Scanner(System.in);
         HttpClient httpClient = HttpClient.newBuilder().build();
         ObjectMapper objectMapper = new ObjectMapper();
         OutputContacts outputContacts = new OutputContacts();
-        String baseUri = properties.getProperty("api.base-uri");
-        String filePath = properties.getProperty("file.path");
-        String workmode = properties.getProperty("app.service.workmode");
+        String baseUri = properties.getBaseUri();
+        String filePath = properties.getFilePath();
+        String workmode = properties.getWorkmode();
         boolean envIsValid = false;
         if (workmode.equals("api")) {
             UserService userService = new ApiUserService(httpClient, objectMapper, baseUri);
