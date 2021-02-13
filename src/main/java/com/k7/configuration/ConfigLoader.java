@@ -10,30 +10,31 @@ import java.util.Properties;
 
 public class ConfigLoader {
 
-    public<T> T getSystemProps(Class<T> clazz) {
+    public <T> T getSystemProps(Class<T> clazz) {
         Object object = createObject(clazz);
-       extractedProperties(object,System.getProperties());
-       return (T)object;
+        extractedProperties(object, System.getProperties());
+        return (T) object;
     }
 
-    public<T> T getFileProps(Class<T> clazz, String file) {
+    public <T> T getFileProps(Class<T> clazz, String file) {
         try (InputStream readFile = new FileInputStream(file)) {
             Properties properties = new Properties();
             properties.load(readFile);
             Object object = createObject(clazz);
             extractedProperties(object, properties);
-            return (T)object;
+            return (T) object;
         } catch (IOException e) {
-           throw new RuntimeException("Fail load properties from "+ file,e);
+            throw new RuntimeException("Fail load properties from " + file, e);
         }
 
     }
-    private Object createObject(Class clazz){
+
+    private Object createObject(Class clazz) {
         try {
             Constructor constructor = clazz.getConstructor();
             return constructor.newInstance();
-        } catch (NoSuchMethodException|IllegalAccessException|InstantiationException|InvocationTargetException e) {
-            throw new RuntimeException("Constructor must be declared",e);
+        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException("Constructor must be declared", e);
         }
 
     }
