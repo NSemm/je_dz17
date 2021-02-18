@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.k7.contacts.User;
 import com.k7.dto.*;
+import com.k7.httpfactory.HttpRequestFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ public class ApiUserService implements UserService {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
     private final String baseUri;
+    private final HttpRequestFactory httpRequestFactory;
     private String token = null;
     private LocalDateTime tokenTime = null;
 
@@ -38,7 +40,8 @@ public class ApiUserService implements UserService {
         req.setPassword(user.getPassword());
         req.setDateBorn(user.getDateBorn().toString());
         try {
-            HttpRequest request = requestBuild(req, "/register");
+            //HttpRequest request = requestBuild(req, "/register");
+            HttpRequest request = httpRequestFactory.createPostRequest(req, baseUri + "/register");
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             //System.out.println("reg "+response.body());
             StatusResponse statusResponse = objectMapper.readValue(response.body(), StatusResponse.class);
@@ -57,8 +60,8 @@ public class ApiUserService implements UserService {
         req.setLogin(user.getLogin());
         req.setPassword(user.getPassword());
         try {
-            HttpRequest request = requestBuild(req, "/login");
-
+            //HttpRequest request = requestBuild(req, "/login");
+            HttpRequest request = httpRequestFactory.createPostRequest(req, baseUri + "/login");
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             //System.out.println(response.body());
             LoginResponse loginResponse = objectMapper.readValue(response.body(), LoginResponse.class);
@@ -79,11 +82,12 @@ public class ApiUserService implements UserService {
 
     @Override
     public List<User> getAll() {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(baseUri + "/users"))
-                .GET()
-                .header("Accept", "Application/json")
-                .build();
+//        HttpRequest request = HttpRequest.newBuilder()
+//                .uri(URI.create(baseUri + "/users"))
+//                .GET()
+//                .header("Accept", "Application/json")
+//                .build();
+        HttpRequest request = httpRequestFactory.createGetRequest(baseUri + "/users");
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             //System.out.println(response.body());
@@ -103,12 +107,12 @@ public class ApiUserService implements UserService {
     }
 
 
-    private HttpRequest requestBuild(Object req, String uri) throws JsonProcessingException {
-        return HttpRequest.newBuilder()
-                .uri(URI.create(baseUri + uri))
-                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(req)))
-                .header("Accept", "Application/json")
-                .header("Content-Type", "Application/json")
-                .build();
-    }
+//    private HttpRequest requestBuild(Object req, String uri) throws JsonProcessingException {
+//        return HttpRequest.newBuilder()
+//                .uri(URI.create(baseUri + uri))
+//                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(req)))
+//                .header("Accept", "Application/json")
+//                .header("Content-Type", "Application/json")
+//                .build();
+//    }
 }

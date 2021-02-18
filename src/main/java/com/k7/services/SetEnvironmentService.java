@@ -3,6 +3,8 @@ package com.k7.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.k7.Menu;
 import com.k7.configuration.AppProperties;
+import com.k7.httpfactory.HttpRequestFactory;
+import com.k7.httpfactory.JsonHttpRequestFactory;
 import com.k7.menuaction.*;
 import com.k7.services.*;
 import com.k7.utility.OutputContacts;
@@ -25,8 +27,9 @@ public class SetEnvironmentService {
         String workmode = properties.getWorkmode();
         boolean envIsValid = false;
         if (workmode.equals("api")) {
-            UserService userService = new ApiUserService(httpClient, objectMapper, baseUri);
-            ContactService contactService = new ApiContactService(baseUri, objectMapper, userService, httpClient);
+            HttpRequestFactory httpRequestFactory = new JsonHttpRequestFactory(objectMapper);
+            UserService userService = new ApiUserService(httpClient, objectMapper, baseUri,httpRequestFactory);
+            ContactService contactService = new ApiContactService(baseUri, objectMapper, userService, httpClient, httpRequestFactory);
             bodyExecute(sc, outputContacts, userService, contactService);
             envIsValid = true;
         }
