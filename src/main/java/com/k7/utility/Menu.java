@@ -1,4 +1,4 @@
-package com.k7;
+package com.k7.utility;
 
 import com.k7.menuaction.MenuAction;
 

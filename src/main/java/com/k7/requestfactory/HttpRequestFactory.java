@@ -1,4 +1,4 @@
-package com.k7.httpfactory;
+package com.k7.requestfactory;
 
 import com.k7.services.UserService;
 

@@ -1,16 +1,14 @@
 package com.k7.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.k7.contacts.Contact;
 import com.k7.contacts.ContactType;
 import com.k7.dto.ContactsResponse;
 import com.k7.dto.StatusResponse;
-import com.k7.httpfactory.HttpRequestFactory;
+import com.k7.requestfactory.HttpRequestFactory;
 import lombok.AllArgsConstructor;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -34,10 +32,8 @@ public class ApiContactService implements ContactService {
         req.setValue(c.getValue());
         req.setType(c.getType().toString().toLowerCase());
         try {
-            //HttpRequest request = requestBuild(req, "/contacts/add");
             HttpRequest request = httpRequestFactory.createPostRequestAuth(req, baseUri + "/contacts/add", userService);
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            //System.out.println("add_resp" + response.body());
             StatusResponse statusResponse = objectMapper.readValue(response.body(), StatusResponse.class);
             if (statusResponse.getStatus().equals("error")) {
                 throw new RuntimeException("Error Operation addContact: " + statusResponse.getError());
@@ -58,10 +54,8 @@ public class ApiContactService implements ContactService {
         ContactsResponse.ContactRequest req = new ContactsResponse.ContactRequest();
         req.setName(name);
         try {
-            //HttpRequest request = requestBuild(req, "/contacts/find");
             HttpRequest request = httpRequestFactory.createPostRequestAuth(req, baseUri + "/contacts/find", userService);
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            //System.out.println("contBname:" + response.body());
             ContactsResponse contactsResponse = objectMapper.readValue(response.body(), ContactsResponse.class);
             if (contactsResponse.getStatus().equals("error")) {
                 throw new RuntimeException("Operation error: " + contactsResponse.getError());
@@ -78,7 +72,6 @@ public class ApiContactService implements ContactService {
         ContactsResponse.ContactRequest req = new ContactsResponse.ContactRequest();
         req.setValue(value);
         try {
-            //HttpRequest request = requestBuild(req, "/contacts/find");
             HttpRequest request = httpRequestFactory.createPostRequestAuth(req, baseUri + "/contacts/find", userService);
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             ContactsResponse contactsResponse = objectMapper.readValue(response.body(), ContactsResponse.class);
@@ -96,16 +89,8 @@ public class ApiContactService implements ContactService {
     @Override
     public List<Contact> getAll() {
         try {
-//            HttpRequest request = HttpRequest.newBuilder()
-//                    .uri(URI.create(baseUri + "/contacts"))
-//                    .GET()
-//                    .header("Accept", "Application/json")
-//                    .header("Content-Type", "Application/json")
-//                    .header("Authorization", "Bearer " + userService.getToken())
-//                    .build();
             HttpRequest request = httpRequestFactory.createGetRequestAuth(baseUri + "/contacts", userService);
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            //System.out.println("contAll:"+response.body());
             ContactsResponse contactsResponse = objectMapper.readValue(response.body(), ContactsResponse.class);
             return getCollectContacts(contactsResponse);
         } catch (IOException | InterruptedException e) {
@@ -113,17 +98,6 @@ public class ApiContactService implements ContactService {
         }
         return Collections.emptyList();
     }
-
-//    private HttpRequest requestBuild(Object req, String uri) throws JsonProcessingException {
-//        HttpRequest request = HttpRequest.newBuilder()
-//                .uri(URI.create(baseUri + uri))
-//                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(req)))
-//                .header("Authorization", "Bearer " + userService.getToken())
-//                .header("Accept", "Application/json")
-//                .header("Content-Type", "Application/json")
-//                .build();
-//        return request;
-//    }
 
     private List<Contact> getCollectContacts(ContactsResponse contactsResponse) {
         return contactsResponse.getContacts().stream().map(c -> {

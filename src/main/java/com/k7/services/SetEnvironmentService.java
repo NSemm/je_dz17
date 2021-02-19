@@ -1,16 +1,15 @@
 package com.k7.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.k7.Menu;
+import com.k7.servicefactory.ApiServiceFactory;
+import com.k7.servicefactory.FileServiceFactory;
+import com.k7.servicefactory.InMemoryServiceFactory;
+import com.k7.servicefactory.ServiceFactory;
+import com.k7.utility.Menu;
 import com.k7.configuration.AppProperties;
-import com.k7.httpfactory.HttpRequestFactory;
-import com.k7.httpfactory.JsonHttpRequestFactory;
 import com.k7.menuaction.*;
-import com.k7.services.*;
 import com.k7.utility.OutputContacts;
 import lombok.AllArgsConstructor;
 
-import java.net.http.HttpClient;
 import java.util.*;
 
 @AllArgsConstructor
@@ -19,29 +18,28 @@ public class SetEnvironmentService {
 
     public void start() {
         Scanner sc = new Scanner(System.in);
-        HttpClient httpClient = HttpClient.newBuilder().build();
-        ObjectMapper objectMapper = new ObjectMapper();
         OutputContacts outputContacts = new OutputContacts();
-        String baseUri = properties.getBaseUri();
-        String filePath = properties.getFilePath();
         String workmode = properties.getWorkmode();
+        ServiceFactory serviceFactory;
         boolean envIsValid = false;
         if (workmode.equals("api")) {
-            HttpRequestFactory httpRequestFactory = new JsonHttpRequestFactory(objectMapper);
-            UserService userService = new ApiUserService(httpClient, objectMapper, baseUri,httpRequestFactory);
-            ContactService contactService = new ApiContactService(baseUri, objectMapper, userService, httpClient, httpRequestFactory);
+            serviceFactory = new ApiServiceFactory(properties);
+            UserService userService = serviceFactory.createUserServices();
+            ContactService contactService = serviceFactory.createContactServices();
             bodyExecute(sc, outputContacts, userService, contactService);
             envIsValid = true;
         }
         if (workmode.equals("file")) {
-            UserService userService = new MocksUserService();
-            ContactService contactService = new NioFileContactService(filePath);
+            serviceFactory = new FileServiceFactory(properties);
+            UserService userService = serviceFactory.createUserServices();
+            ContactService contactService = serviceFactory.createContactServices();
             bodyExecute(sc, outputContacts, userService, contactService);
             envIsValid = true;
         }
         if (workmode.equals("memory")) {
-            UserService userService = new MocksUserService();
-            ContactService contactService = new InMemoryContactService();
+            serviceFactory = new InMemoryServiceFactory();
+            UserService userService = serviceFactory.createUserServices();
+            ContactService contactService = serviceFactory.createContactServices();
             bodyExecute(sc, outputContacts, userService, contactService);
             envIsValid = true;
         }
@@ -60,17 +58,5 @@ public class SetEnvironmentService {
         menu.addAction(new ExitMenuAction());
         menu.run();
     }
-
-//    public String setContactService(String workmode) {
-//        Map<String, String> varEnv = new HashMap<>();
-//        varEnv.put("api", "ApiContactService(baseUri, objectMapper, userService, httpClient)");
-//        varEnv.put("file", "NioFileContactService(properties.getProperty(\"file.path\")");
-//        varEnv.put("memory", "InMemoryContactService()");
-//        List<String> list = varEnv.entrySet().stream()
-//                .filter(c -> workmode.equals(c.getKey()))
-//                .map(c -> c.getValue())
-//                .collect(Collectors.toList());
-//        return list.get(0);
-//    }
 
 }
