@@ -7,7 +7,7 @@ import java.util.List;
 public interface UserService {
     String getToken();
     void registration(User user);
-    void login(User user);
+    void auth(User user);
     List<User> getAll();
     boolean isAuth();
 }

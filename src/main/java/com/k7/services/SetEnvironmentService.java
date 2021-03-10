@@ -1,9 +1,7 @@
 package com.k7.services;
 
-import com.k7.servicefactory.ApiServiceFactory;
-import com.k7.servicefactory.FileServiceFactory;
-import com.k7.servicefactory.InMemoryServiceFactory;
-import com.k7.servicefactory.ServiceFactory;
+import com.k7.configuration.DbProperties;
+import com.k7.servicefactory.*;
 import com.k7.utility.Menu;
 import com.k7.configuration.AppProperties;
 import com.k7.menuaction.*;
@@ -15,6 +13,7 @@ import java.util.*;
 @AllArgsConstructor
 public class SetEnvironmentService {
     private AppProperties properties;
+    private DbProperties dbProperties;
 
     public void start() {
         Scanner sc = new Scanner(System.in);
@@ -38,6 +37,13 @@ public class SetEnvironmentService {
         }
         if (workmode.equals("memory")) {
             serviceFactory = new InMemoryServiceFactory();
+            UserService userService = serviceFactory.createUserServices();
+            ContactService contactService = serviceFactory.createContactServices();
+            bodyExecute(sc, outputContacts, userService, contactService);
+            envIsValid = true;
+        }
+        if (workmode.equals("db")) {
+            serviceFactory = new DbServiceFactory(dbProperties);
             UserService userService = serviceFactory.createUserServices();
             ContactService contactService = serviceFactory.createContactServices();
             bodyExecute(sc, outputContacts, userService, contactService);

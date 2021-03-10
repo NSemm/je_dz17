@@ -17,7 +17,7 @@ public class MocksUserService implements UserService {
     }
 
     @Override
-    public void login(User user) {
+    public void auth(User user) {
         throw new UnsupportedOperationException("login disable");
     }
 

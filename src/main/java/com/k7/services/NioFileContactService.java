@@ -97,9 +97,9 @@ public class NioFileContactService implements ContactService {
         Pattern pattern = Pattern.compile("(?:(.+)\\[)(?:(.+):)(?:(.+)\\])");
         Matcher matcher = pattern.matcher(user);
         Contact parsedUser = new Contact();
-        if ((!matcher.matches())) {
-            System.out.println(user + " - Invalid user!");
-            return null;
+            if ((!matcher.matches())) {
+                System.out.println(user + " - Invalid user!");
+                return null;
         } else {
             parsedUser.setName(matcher.group(1));
             parsedUser.setType(ContactType.valueOf(matcher.group(2).toUpperCase()));

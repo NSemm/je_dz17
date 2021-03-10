@@ -50,7 +50,7 @@ public class ApiUserService implements UserService {
     }
 
     @Override
-    public void login(User user) {
+    public void auth(User user) {
 
         LoginResponse.LoginRequest req = new LoginResponse.LoginRequest();
         req.setLogin(user.getLogin());

@@ -4,7 +4,7 @@ import com.k7.contacts.User;
 import com.k7.services.UserService;
 import lombok.AllArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 public class RegistrationUserMenuAction implements MenuAction {
@@ -14,9 +14,9 @@ public class RegistrationUserMenuAction implements MenuAction {
     @Override
     public void doAction() {
         User user = new User();
-        user.setLogin("Antuan");
-        user.setDateBorn(LocalDate.now());
-        user.setPassword("9999");
+        user.setLogin("NSem");
+        user.setDateBorn(LocalDateTime.now());
+        user.setPassword("1111");
         userService.registration(user);
     }
 
