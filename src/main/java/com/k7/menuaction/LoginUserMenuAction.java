@@ -12,22 +12,24 @@ public class LoginUserMenuAction implements MenuAction {
 
     @Override
     public void doAction() {
-        User user = new User();
-        user.setLogin("NSem");
-        user.setDateBorn(LocalDateTime.now());
-        //user.setPassword("321741");
-        user.setPassword("1111");
-        userService.auth(user);
+//        User user = new User();
+//        user.setLogin("NSem");
+//        user.setDateBorn(LocalDateTime.now());
+//        //user.setPassword("321741");
+//        user.setPassword("1111");
+//        userService.auth(user);
+
   //      User user2 = new User();
 //        user2.setLogin("semerenko");
 //        user2.setDateBorn(LocalDateTime.now());
 //        user2.setPassword("321741");
-//        userService.login(user);
-//        User user3 = new User();
-//        user3.setLogin("Antuan");
-//        user3.setDateBorn(LocalDateTime.now());
-//        user3.setPassword("9231");
-//        userService.login(user3);
+//        userService.auth(user2);
+
+        User user3 = new User();
+        user3.setLogin("Antuan");
+        user3.setDateBorn(LocalDateTime.now());
+        user3.setPassword("9999");
+        userService.auth(user3);
     }
 
     @Override

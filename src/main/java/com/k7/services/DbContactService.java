@@ -2,6 +2,7 @@ package com.k7.services;
 
 import com.k7.contacts.Contact;
 import com.k7.contacts.ContactType;
+import com.k7.utility.UserIdStorage;
 import com.zaxxer.hikari.HikariConfig;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -16,24 +17,23 @@ import java.util.List;
 public class DbContactService implements ContactService {
     private final HikariConfig config;
     private final DataSource dataSource;
-    private Integer userId;
+    private UserIdStorage userId;
 
     @Override
     public void add(Contact c) {
         try {
             Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO contact (contact_name, contact_type, contact_value, user_id)" +
-                            "SELECT ?,t.id,?,u.id" +
-                            "INNER JOIN users u ON u.id = ?" +
-                            "INNER JOIN contact_type t ON t.type = ?"
+                    "INSERT INTO contacts (contact_name, contact_type, contact_value, user_id) " +
+                            "SELECT ?, t.id, ?, ? " +
+                            "FROM contact_type t " +
+                            "WHERE t.type = ? "
             );
             statement.setString(1, c.getName());
             statement.setString(2, c.getValue());
-            statement.setString(3, userId.toString());
+            statement.setLong(3, userId.getId());
             statement.setString(4, c.getType().toString());
             statement.execute();
-
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -51,18 +51,18 @@ public class DbContactService implements ContactService {
             PreparedStatement statement = connection.prepareStatement(
                     "SELECT c.contact_name, t.type, c.contact_value " +
                             "FROM contacts c " +
-                            "INNER JOIN users u ON u.id = c.id " +
-                            "INNER JOIN contact_type t ON t.id = c.contact_type" +
-                            "WHERE c.contact_name like ?"
+                            "INNER JOIN contact_type t ON t.id = c.contact_type " +
+                            "WHERE c.user_id = ? AND c.contact_name like ? "
             );
+            statement.setLong(1, userId.getId());
+            statement.setString(2, name);
             ResultSet res = statement.executeQuery();
-            statement.setString(1, name);
             List<Contact> contacts = new ArrayList<>();
             while (res.next()) {
                 Contact contact = new Contact();
-                contact.setName(res.getString("c.contact_name"));
-                contact.setType(ContactType.valueOf(res.getString("t.contact_type")));
-                contact.setValue(res.getString("c.contact_value"));
+                contact.setName(res.getString("contact_name"));
+                contact.setType(ContactType.valueOf(res.getString("type")));
+                contact.setValue(res.getString("contact_value"));
                 contacts.add(contact);
             }
             return contacts;
@@ -79,18 +79,18 @@ public class DbContactService implements ContactService {
             PreparedStatement statement = connection.prepareStatement(
                     "SELECT c.contact_name, t.type, c.contact_value " +
                             "FROM contacts c " +
-                            "INNER JOIN users u ON u.id = c.id " +
-                            "INNER JOIN contact_type t ON t.id = c.contact_type" +
-                            "WHERE c.contact_value like ?"
+                            "INNER JOIN contact_type t ON t.id = c.contact_type " +
+                            "WHERE c.user_id = ? AND c.contact_value like ?"
             );
+            statement.setLong(1, userId.getId());
+            statement.setString(2, value);
             ResultSet res = statement.executeQuery();
-            statement.setString(1, value);
             List<Contact> contacts = new ArrayList<>();
             while (res.next()) {
                 Contact contact = new Contact();
-                contact.setName(res.getString("c.contact_name"));
-                contact.setType(ContactType.valueOf(res.getString("t.contact_type")));
-                contact.setValue(res.getString("c.contact_value"));
+                contact.setName(res.getString("contact_name"));
+                contact.setType(ContactType.valueOf(res.getString("type")));
+                contact.setValue(res.getString("contact_value"));
                 contacts.add(contact);
             }
             return contacts;
@@ -104,19 +104,20 @@ public class DbContactService implements ContactService {
     public List<Contact> getAll() {
         try {
             Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet res = statement.executeQuery(
+            PreparedStatement statement = connection.prepareStatement(
                     "SELECT c.contact_name, t.type, c.contact_value " +
                             "FROM contacts c " +
-                            "INNER JOIN users u ON u.id = c.id " +
-                            "INNER JOIN contact_type t ON t.id = c.contact_type"
+                            "INNER JOIN contact_type t ON t.id = c.contact_type " +
+                            "WHERE c.user_id = ? "
             );
+            statement.setLong(1, userId.getId());
+            ResultSet res = statement.executeQuery();
             List<Contact> contacts = new ArrayList<>();
             while (res.next()) {
                 Contact contact = new Contact();
-                contact.setName(res.getString("c.contact_name"));
-                contact.setType(ContactType.valueOf(res.getString("t.contact_type")));
-                contact.setValue(res.getString("c.contact_value"));
+                contact.setName(res.getString("contact_name"));
+                contact.setType(ContactType.valueOf(res.getString("type")));
+                contact.setValue(res.getString("contact_value"));
                 contacts.add(contact);
             }
             return contacts;

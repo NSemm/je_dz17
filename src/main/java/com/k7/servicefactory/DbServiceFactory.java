@@ -6,6 +6,7 @@ import com.k7.configuration.DbProperties;
 import com.k7.requestfactory.HttpRequestFactory;
 import com.k7.requestfactory.JsonHttpRequestFactory;
 import com.k7.services.*;
+import com.k7.utility.UserIdStorage;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public class DbServiceFactory implements ServiceFactory {
     private final DbProperties dbProperties;
-    private int userId = 0;
+    private UserIdStorage userId = new UserIdStorage();
 
 
     @Override

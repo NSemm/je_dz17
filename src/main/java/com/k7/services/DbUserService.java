@@ -1,6 +1,7 @@
 package com.k7.services;
 
 import com.k7.contacts.User;
+import com.k7.utility.UserIdStorage;
 import com.zaxxer.hikari.HikariConfig;
 import lombok.AllArgsConstructor;
 
@@ -12,7 +13,7 @@ import java.util.List;
 public class DbUserService implements UserService {
     private final HikariConfig config;
     private final DataSource dataSource;
-    private int userId;
+    private UserIdStorage userId;
     private boolean isLogin;
 
     @Override
@@ -40,20 +41,17 @@ public class DbUserService implements UserService {
 
     @Override
     public void auth(User user) {
-        System.out.println("start");
         try {
             Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                    "SELECT login, password" +
-                            "FROM users  " +
-                            "WHERE login = ?");
+                    "SELECT id, login, password FROM users WHERE login = ?"
+            );
             statement.setString(1, user.getLogin());
-            System.out.println("ussser    :   " + user.getLogin());
-            ResultSet res2 = statement.executeQuery();
-            while (res2.next()) {
-                if (res2.getString("password").equals(user.getPassword())) {
+            ResultSet res = statement.executeQuery();
+            while (res.next()) {
+                if (res.getString("password").equals(user.getPassword())) {
                     isLogin = true;
-                    userId = (int) res2.getLong("Id");
+                    userId.setId((int) res.getLong("Id"));
                 } else {
                     throw new RuntimeException("Invalid password");
                 }

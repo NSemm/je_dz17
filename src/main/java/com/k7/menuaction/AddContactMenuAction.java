@@ -14,9 +14,9 @@ public class AddContactMenuAction implements MenuAction {
     @Override
     public void doAction() {
         Contact contact = new Contact();
-        contact.setName("Иван");
-        contact.setType(ContactType.PHONE);
-        contact.setValue("0698521470");
+        contact.setName("Vasya");
+        contact.setType(ContactType.EMAIL);
+        contact.setValue("vasya.vorobey@gmail.com");
         contactService.add(contact);
     }
 
